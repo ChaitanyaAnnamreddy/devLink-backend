@@ -67,13 +67,13 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-/** 🔹 **Middleware to Hash Password Before Saving a New User** */
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10)
-  }
-  next()
-})
+// /** 🔹 **Middleware to Hash Password Before Saving a New User** */
+// userSchema.pre('save', async function (next) {
+//   if (this.isModified('password')) {
+//     this.password = await bcrypt.hash(this.password, 10)
+//   }
+//   next()
+// })
 
 /** 🔹 **Method to Generate JWT Token** */
 userSchema.methods.getJWT = async function () {

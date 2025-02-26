@@ -31,6 +31,10 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user
 
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 5
+    const skip = (page - 1) * limit
+
     const connectionRequests = await ConnectionRequest.find({
       $or: [
         { toUserId: loggedInUser._id, status: 'accepted' },
@@ -39,17 +43,30 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
     })
       .populate('fromUserId', USER_SAFE_DATA)
       .populate('toUserId', USER_SAFE_DATA)
+      .skip(skip)
+      .limit(limit)
 
     console.log(connectionRequests)
 
-    const data = connectionRequests.map((row) => {
-      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        return row.toUserId
-      }
-      return row.fromUserId
+    const totalConnections = await ConnectionRequest.countDocuments({
+      $or: [
+        { toUserId: loggedInUser._id, status: 'accepted' },
+        { fromUserId: loggedInUser._id, status: 'accepted' },
+      ],
     })
 
-    res.json({ data })
+    const data = connectionRequests.map((row) => {
+      return row.fromUserId._id.toString() === loggedInUser._id.toString()
+        ? row.toUserId
+        : row.fromUserId
+    })
+
+    res.json({
+      data,
+      totalConnections,
+      currentPage: page,
+      totalPages: Math.ceil(totalConnections / limit),
+    })
   } catch (err) {
     res.status(400).send({ message: err.message })
   }
