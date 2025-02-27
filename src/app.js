@@ -11,7 +11,7 @@ require('./utils/cronjob')
 
 app.use(
   cors({
-    origin: 'https://devcircle-hub.netlify.app',
+    origin: ['http://localhost:5173', 'https://devcircle-hub.netlify.app'],
     credentials: true,
   })
 )
