@@ -14,6 +14,7 @@ const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
       origin: ['http://localhost:5173', 'https://devcircle-hub.netlify.app'],
+      credentials: true,
     },
   })
 
