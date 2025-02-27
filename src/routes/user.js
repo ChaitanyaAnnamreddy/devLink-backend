@@ -106,4 +106,25 @@ userRouter.get('/feed', userAuth, async (req, res) => {
     res.status(400).json({ message: err.message })
   }
 })
+
+userRouter.delete('/user/delete', userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user
+
+    // Delete the user from the database
+    await User.findByIdAndDelete(loggedInUser._id)
+
+    // Optionally, remove all related connection requests
+    await ConnectionRequest.deleteMany({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    })
+
+    res.json({ message: 'User deleted successfully' })
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: 'Error deleting account', error: err.message })
+  }
+})
+
 module.exports = userRouter

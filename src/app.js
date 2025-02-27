@@ -26,6 +26,7 @@ const userRouter = require('./routes/user')
 const paymentRouter = require('./routes/payment')
 const initializeSocket = require('./utils/socket')
 const chatRouter = require('./routes/chat')
+const passwordupdateRouter = require('./routes/passwordupdate')
 
 app.use('/', authRouter)
 app.use('/', profileRouter)
@@ -33,12 +34,14 @@ app.use('/', requestRouter)
 app.use('/', userRouter)
 app.use('/', paymentRouter)
 app.use('/', chatRouter)
+app.use('/', passwordupdateRouter)
 
 const server = http.createServer(app)
 initializeSocket(server)
 
 connectDB()
   .then(() => {
+    console.log('Database connection established...')
     console.log('Database connection established...')
     server.listen(process.env.PORT, () => {
       console.log('Server is successfully listening on port 7777...')
